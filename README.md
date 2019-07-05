@@ -1,52 +1,40 @@
 # machine-learnin-2
 
-"""
-a simlple regression analysis on the bostan housing date
-here we perform a simple regression analysis on the boston housing
-data exploring two tyes of regresssion
-"""
-
-
-from sklearn.datasets import load_boston
-data=load_boston()
-#print a histogram of the quality to predict :price
-
+#load libraries
+import pandas
+from pandas.plotting import scatter_matrix
 import matplotlib.pyplot as plt
-plt.figure(figsize=(4,3))
-plt.hist(data.target)
-plt.xlabel('price ($1000s)')
-plt.ylabel('count')
-plt.tight_layout()
+from sklearn import model_selection
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv"
+names = ['sepal-length','sepal-width', 'petal-length' , 'petal-width' , 'class']
+dataset = pandas.read_csv(url, names=names)
+#description
+print(dataset.describe())
+#description
+#class distribution
+print( dataset.groupby('class').size())
+
+#box and whisker plots
+dataset.plot(kind='box', subplots= True ,layout =(2,2),sharex= False, sharey= False)
 plt.show()
-#print the join histogram for each features
-
-for index, feature_name in enumerate(data.feature_names):
-    plt.figure(figsize=(4,3))
-    plt.scatter(data.data[:,index],data.target)
-    plt.ylabel('price',size=15)
-    plt.xlabel(feature_name, size=15)
-    plt.tight_layout()
-    plt.show()
-
-#simple prediction
-##############################################################
-from sklearn.model_selection import train_test_split
-X_train, X_test,Y_train,Y_test= train_test_split(data.data,data.target)
-
-from sklearn.linear_model import LinearRegression
-clf= LinearRegression()
-
-clf.fit(X_train,Y_train)
-predicted=clf.predict(X_test)
-expected= Y_test
-
-plt.figure(figsize=(4,3))
-plt.scatter(expected,predicted)
-plt.plot([10,50],[0,50],'--k')
-plt.axis('tight')
-plt.xlabel('True price($1000s)')
-plt.ylabel('predicted prices ($1000s)')
-plt.tight_layout()
+#histogram
+dataset.hist()
 plt.show()
+scatter_matrix(dataset)
+plt.show()
+array= dataset.values
+X= array[:,0:4]
+Y=array[:,4]
+validation_size=0.20
+seed=7
+X_train,X_validation,Y_train,Y_validation=model_selection.train_test_split(X,Y, test_size=validation_size, random_state=seed)   
+        
+models=[]
+models.append(('LR',LogisticRegression(solver='liblinear', multi_class='ovr')))
 
-                                
+                                      
